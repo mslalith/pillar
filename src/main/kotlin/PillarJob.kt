@@ -11,7 +11,7 @@ interface PillarJob {
     val state: StateFlow<PillarJobState>
 
     fun <T> parallel(task: PillarTask<T>)
-    fun <T> parallel(tasks: List<PillarTask<T>>)
+    fun parallel(tasks: List<PillarTask<*>>)
 
     fun start()
     fun cancel()
@@ -33,7 +33,7 @@ internal class PillarJobImpl(
         tasks.add(task)
     }
 
-    override fun <T> parallel(tasks: List<PillarTask<T>>) {
+    override fun parallel(tasks: List<PillarTask<*>>) {
         tasks.forEach { parallel(it) }
     }
 

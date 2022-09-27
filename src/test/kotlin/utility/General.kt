@@ -7,6 +7,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import tasks.PillarJobState
 
+data class TestModel1(val int: Int = 0)
+
+data class TestModel2(
+    val int: Int = 0,
+    val string: String = ""
+)
+
+data class TestModel3(
+    val int: Int = 0,
+    val string: String = "",
+    val model1: TestModel1 = TestModel1()
+)
+
 const val TEST_COMPLETE_DELAY_OFFSET = 200
 
 fun CoroutineScope.createPillarJob() = Pillar.newJob(coroutineScope = this)
