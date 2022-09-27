@@ -35,7 +35,7 @@ internal class MultipleParallelTests {
                     assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
                     assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
                     assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                    expectNoEvents()
+                    ensureAllEventsConsumed()
 
                     val tasksResultSum = tasks.sumOf { it.data.value }
                     assertThat(tasksResultSum).isEqualTo(30)
@@ -45,19 +45,19 @@ internal class MultipleParallelTests {
             coroutineScope {
                 return5Task.data.test {
                     assertThat(awaitItem()).isEqualTo(5)
-                    expectNoEvents()
+                    ensureAllEventsConsumed()
                 }
             }
             coroutineScope {
                 return10Task.data.test {
                     assertThat(awaitItem()).isEqualTo(10)
-                    expectNoEvents()
+                    ensureAllEventsConsumed()
                 }
             }
             coroutineScope {
                 return15Task.data.test {
                     assertThat(awaitItem()).isEqualTo(15)
-                    expectNoEvents()
+                    ensureAllEventsConsumed()
                 }
             }
         }

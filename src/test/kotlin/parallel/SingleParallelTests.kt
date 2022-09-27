@@ -30,14 +30,14 @@ internal class SingleParallelTests {
                     assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
                     assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
                     assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                    expectNoEvents()
+                    ensureAllEventsConsumed()
                 }
             }
 
             coroutineScope {
                 return5Task.data.test {
                     assertThat(awaitItem()).isEqualTo(5)
-                    expectNoEvents()
+                    ensureAllEventsConsumed()
                 }
             }
         }

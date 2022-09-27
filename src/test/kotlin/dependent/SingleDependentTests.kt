@@ -33,7 +33,7 @@ internal class SingleDependentTests {
                 assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
                 assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
                 assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                expectNoEvents()
+                ensureAllEventsConsumed()
             }
         }
 
@@ -78,7 +78,7 @@ internal class SingleDependentTests {
                 assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
                 assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
                 assertThat(awaitItem()).isEqualTo(PillarJobState.CANCELLED)
-                expectNoEvents()
+                ensureAllEventsConsumed()
             }
         }
 

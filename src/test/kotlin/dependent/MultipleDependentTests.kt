@@ -45,7 +45,7 @@ internal class MultipleDependentTests {
                     assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
                     assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
                     assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                    expectNoEvents()
+                    ensureAllEventsConsumed()
 
                     val tasksResultSum = tasks.sumOf { it.data.value }
                     assertThat(tasksResultSum).isEqualTo(15)
