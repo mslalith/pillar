@@ -37,7 +37,7 @@ internal class MultipleDependentTests {
         )
 
         val tasks = listOf(dependentReturn5Task, dependentReturn10Task)
-        pillarJob.parallel(tasks = tasks)
+        pillarJob.enqueue(tasks = tasks)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -77,7 +77,7 @@ internal class MultipleDependentTests {
         )
 
         val tasks = listOf(dependentReturn5Task, dependentReturn10Task)
-        pillarJob.parallel(tasks = tasks)
+        pillarJob.enqueue(tasks = tasks)
 
         val timeTaken = pillarJob.startAndMeasureCompletionTime(this)
         assertThat(timeTaken).isGreaterThan(delayInMillis)
@@ -98,7 +98,7 @@ internal class MultipleDependentTests {
         )
 
         val tasks = listOf(dependentReturn5Task, dependentReturn10Task)
-        pillarJob.parallel(tasks = tasks)
+        pillarJob.enqueue(tasks = tasks)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCancelled()

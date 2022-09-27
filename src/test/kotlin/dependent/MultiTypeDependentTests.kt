@@ -24,7 +24,7 @@ class MultiTypeDependentTests {
         val intTask = DependentWithTypeTask(initial = 0, returns = 10)
         val stringTask = DependentWithTypeTask(initial = "", returns = "Hello")
         val booleanTask = DependentWithTypeTask(initial = false, returns = true)
-        pillarJob.parallel(tasks = listOf(intTask, stringTask, booleanTask))
+        pillarJob.enqueue(tasks = listOf(intTask, stringTask, booleanTask))
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -47,7 +47,7 @@ class MultiTypeDependentTests {
         val model1Task = DependentWithTypeTask(initial = null, returns = model1Result)
         val model2Task = DependentWithTypeTask(initial = null, returns = model2Result)
         val model3Task = DependentWithTypeTask(initial = null, returns = model3Result)
-        pillarJob.parallel(tasks = listOf(model1Task, model2Task, model3Task))
+        pillarJob.enqueue(tasks = listOf(model1Task, model2Task, model3Task))
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -73,7 +73,7 @@ class MultiTypeDependentTests {
             returns = model2Result,
             dependsOn = listOf(parallelModel1Task)
         )
-        pillarJob.parallel(tasks = listOf(model1Task, model2Task))
+        pillarJob.enqueue(tasks = listOf(model1Task, model2Task))
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -107,7 +107,7 @@ class MultiTypeDependentTests {
             returns = model2Result,
             dependsOn = listOf(model1Task)
         )
-        pillarJob.parallel(tasks = listOf(model1Task, model2Task))
+        pillarJob.enqueue(tasks = listOf(model1Task, model2Task))
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()

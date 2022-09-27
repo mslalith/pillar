@@ -26,7 +26,7 @@ internal class SingleDependentTests {
         val dependentReturn5Task = DependentReturn5Task(
             dependsOn = listOf(parallelReturn5Task)
         )
-        pillarJob.parallel(dependentReturn5Task)
+        pillarJob.enqueue(dependentReturn5Task)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -52,7 +52,7 @@ internal class SingleDependentTests {
             delayInMillis = 3_000L,
             dependsOn = listOf(parallelReturn5Task)
         )
-        pillarJob.parallel(dependentReturn5Task)
+        pillarJob.enqueue(dependentReturn5Task)
 
         val timeTaken = pillarJob.startAndMeasureCompletionTime(this)
         assertThat(timeTaken).isGreaterThan(delayInMillis)
@@ -66,7 +66,7 @@ internal class SingleDependentTests {
         val dependentReturn5Task = DependentReturn5Task(
             dependsOn = listOf(parallelReturn5Task)
         )
-        pillarJob.parallel(dependentReturn5Task)
+        pillarJob.enqueue(dependentReturn5Task)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCancelled()

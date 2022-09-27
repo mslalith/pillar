@@ -33,7 +33,7 @@ class ExceptionDependentTests {
     fun `use single dependent task with no dependencies, verify state on crash`() = runTest {
         val pillarJob = createPillarJob()
         val dependentReturn5TaskWithCrash = DependentReturn5TaskWithCrash()
-        pillarJob.parallel(dependentReturn5TaskWithCrash)
+        pillarJob.enqueue(dependentReturn5TaskWithCrash)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -48,7 +48,7 @@ class ExceptionDependentTests {
         val pillarJob = createPillarJob()
         val dependentReturn5Task = DependentReturn5Task()
         val dependentReturn10TaskWithCrash = DependentReturn10TaskWithCrash()
-        pillarJob.parallel(tasks = listOf(dependentReturn5Task, dependentReturn10TaskWithCrash))
+        pillarJob.enqueue(tasks = listOf(dependentReturn5Task, dependentReturn10TaskWithCrash))
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -65,7 +65,7 @@ class ExceptionDependentTests {
         val dependentReturn5TaskWithCrash = DependentReturn5TaskWithCrash(
             dependsOn = listOf(parallelReturn5Task)
         )
-        pillarJob.parallel(dependentReturn5TaskWithCrash)
+        pillarJob.enqueue(dependentReturn5TaskWithCrash)
 
         pillarJob.start()
         assertThat(parallelReturn5Task.data.value).isEqualTo(0)
@@ -80,7 +80,7 @@ class ExceptionDependentTests {
         val dependentReturn5Task = DependentReturn5Task(
             dependsOn = listOf(parallelReturn5TaskWithCrash)
         )
-        pillarJob.parallel(dependentReturn5Task)
+        pillarJob.enqueue(dependentReturn5Task)
 
         pillarJob.start()
         parallelReturn5TaskWithCrash.assertFailed()
@@ -95,7 +95,7 @@ class ExceptionDependentTests {
             initial = null,
             dependsOn = listOf(parallelTask)
         )
-        pillarJob.parallel(dependentTaskWithCrash)
+        pillarJob.enqueue(dependentTaskWithCrash)
 
         pillarJob.start()
         parallelTask.assertCompleted()
@@ -111,7 +111,7 @@ class ExceptionDependentTests {
             returns = TestModel1(),
             dependsOn = listOf(parallelTask)
         )
-        pillarJob.parallel(dependentTask)
+        pillarJob.enqueue(dependentTask)
 
         pillarJob.start()
         parallelTask.assertFailed()
@@ -125,7 +125,7 @@ class ExceptionDependentTests {
         val dependentReturn5TaskWithCrash = DependentReturn5TaskWithCrash(
             dependsOn = listOf(parallelReturn5TaskWithCrash)
         )
-        pillarJob.parallel(dependentReturn5TaskWithCrash)
+        pillarJob.enqueue(dependentReturn5TaskWithCrash)
 
         pillarJob.start()
         parallelReturn5TaskWithCrash.assertFailed()
@@ -143,7 +143,7 @@ class ExceptionDependentTests {
         val dependentReturn10Task = DependentReturn10Task(
             dependsOn = listOf(parallelReturn10Task)
         )
-        pillarJob.parallel(tasks = listOf(dependentReturn5TaskWithCrash, dependentReturn10Task))
+        pillarJob.enqueue(tasks = listOf(dependentReturn5TaskWithCrash, dependentReturn10Task))
 
         pillarJob.start()
         parallelReturn5Task.assertCompleted()
@@ -163,7 +163,7 @@ class ExceptionDependentTests {
         val dependentReturn10TaskWithCrash = DependentReturn10TaskWithCrash(
             dependsOn = listOf(parallelReturn10Task)
         )
-        pillarJob.parallel(tasks = listOf(dependentReturn5Task, dependentReturn10TaskWithCrash))
+        pillarJob.enqueue(tasks = listOf(dependentReturn5Task, dependentReturn10TaskWithCrash))
 
         pillarJob.start()
         parallelReturn5Task.assertCompleted()
@@ -182,7 +182,7 @@ class ExceptionDependentTests {
         val dependentReturn15Task = DependentReturn15Task(
             dependsOn = listOf(dependentReturn10Task)
         )
-        pillarJob.parallel(dependentReturn15Task)
+        pillarJob.enqueue(dependentReturn15Task)
 
         pillarJob.start()
         parallelReturn5TaskWithCrash.assertFailed()
@@ -204,7 +204,7 @@ class ExceptionDependentTests {
             returns = TestModel2(),
             dependsOn = listOf(dependentTask1)
         )
-        pillarJob.parallel(dependentTask2)
+        pillarJob.enqueue(dependentTask2)
 
         pillarJob.start()
         parallelTaskWithCrash.assertFailed()
@@ -222,7 +222,7 @@ class ExceptionDependentTests {
         val dependentReturn15Task = DependentReturn15Task(
             dependsOn = listOf(dependentReturn10TaskWithCrash)
         )
-        pillarJob.parallel(dependentReturn15Task)
+        pillarJob.enqueue(dependentReturn15Task)
 
         pillarJob.start()
         parallelReturn5Task.assertCompleted()
@@ -243,7 +243,7 @@ class ExceptionDependentTests {
             returns = TestModel2(),
             dependsOn = listOf(dependentTask1WithCrash)
         )
-        pillarJob.parallel(dependentTask2)
+        pillarJob.enqueue(dependentTask2)
 
         pillarJob.start()
         parallelTask.assertCompleted()

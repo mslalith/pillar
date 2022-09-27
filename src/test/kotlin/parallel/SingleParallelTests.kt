@@ -22,7 +22,7 @@ internal class SingleParallelTests {
     fun `use single parallel task, verify result`() = runTest {
         val pillarJob = createPillarJob()
         val return5Task = ParallelReturn5Task()
-        pillarJob.parallel(return5Task)
+        pillarJob.enqueue(return5Task)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -38,7 +38,7 @@ internal class SingleParallelTests {
         val pillarJob = createPillarJob()
         val delayInMillis = 3_000L
         val return5Task = ParallelReturn5Task(delayInMillis = delayInMillis)
-        pillarJob.parallel(return5Task)
+        pillarJob.enqueue(return5Task)
 
         val timeTaken = pillarJob.startAndMeasureCompletionTime(this)
         assertThat(timeTaken).isGreaterThan(delayInMillis)
@@ -49,7 +49,7 @@ internal class SingleParallelTests {
     fun `use single parallel task, verify cancellation`() = runTest {
         val pillarJob = createPillarJob()
         val return5Task = ParallelReturn5Task()
-        pillarJob.parallel(return5Task)
+        pillarJob.enqueue(return5Task)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCancelled()

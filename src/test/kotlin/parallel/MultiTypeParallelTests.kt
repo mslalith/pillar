@@ -22,7 +22,7 @@ class MultiTypeParallelTests {
         val intTask = ParallelWithTypeTask(initial = 0, returns = 10)
         val stringTask = ParallelWithTypeTask(initial = "", returns = "Hello")
         val booleanTask = ParallelWithTypeTask(initial = false, returns = true)
-        pillarJob.parallel(tasks = listOf(intTask, stringTask, booleanTask))
+        pillarJob.enqueue(tasks = listOf(intTask, stringTask, booleanTask))
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -45,7 +45,7 @@ class MultiTypeParallelTests {
         val model1Task = ParallelWithTypeTask(initial = null, returns = model1Result)
         val model2Task = ParallelWithTypeTask(initial = null, returns = model2Result)
         val model3Task = ParallelWithTypeTask(initial = null, returns = model3Result)
-        pillarJob.parallel(tasks = listOf(model1Task, model2Task, model3Task))
+        pillarJob.enqueue(tasks = listOf(model1Task, model2Task, model3Task))
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()

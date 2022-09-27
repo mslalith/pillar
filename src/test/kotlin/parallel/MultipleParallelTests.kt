@@ -28,7 +28,7 @@ internal class MultipleParallelTests {
         val return10Task = ParallelReturn10Task()
         val return15Task = ParallelReturn15Task()
         val tasks = listOf(return5Task, return10Task, return15Task)
-        pillarJob.parallel(tasks = tasks)
+        pillarJob.enqueue(tasks = tasks)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -54,7 +54,7 @@ internal class MultipleParallelTests {
         val return10Task = ParallelReturn10Task(delayInMillis = 3_000)
         val return15Task = ParallelReturn15Task(delayInMillis = 4_000)
         val tasks = listOf(return5Task, return10Task, return15Task)
-        pillarJob.parallel(tasks = tasks)
+        pillarJob.enqueue(tasks = tasks)
 
         val timeTaken = pillarJob.startAndMeasureCompletionTime(this)
         assertThat(timeTaken).isGreaterThan(delayInMillis)
@@ -68,7 +68,7 @@ internal class MultipleParallelTests {
         val return10Task = ParallelReturn10Task()
         val return15Task = ParallelReturn15Task()
         val tasks = listOf(return5Task, return10Task, return15Task)
-        pillarJob.parallel(tasks = tasks)
+        pillarJob.enqueue(tasks = tasks)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCancelled()

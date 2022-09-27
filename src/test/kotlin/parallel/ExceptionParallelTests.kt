@@ -24,7 +24,7 @@ class ExceptionParallelTests {
     fun `use single parallel task, verify state on crash`() = runTest {
         val pillarJob = createPillarJob()
         val return5TaskWithCrash = ParallelReturn5TaskWithCrash()
-        pillarJob.parallel(return5TaskWithCrash)
+        pillarJob.enqueue(return5TaskWithCrash)
 
         launch(context = this.coroutineContext) {
             pillarJob.assertJobCompleted()
@@ -38,7 +38,7 @@ class ExceptionParallelTests {
     fun `use single parallel task, verify crash`() = runTest {
         val pillarJob = createPillarJob()
         val return5TaskWithCrash = ParallelReturn5TaskWithCrash()
-        pillarJob.parallel(return5TaskWithCrash)
+        pillarJob.enqueue(return5TaskWithCrash)
 
         pillarJob.start()
         return5TaskWithCrash.assertFailed()
@@ -48,7 +48,7 @@ class ExceptionParallelTests {
     fun `use single parallel task with non-primitive type, verify crash`() = runTest {
         val pillarJob = createPillarJob()
         val model1Task = ParallelWithTypeTaskWithCrash(initial = null)
-        pillarJob.parallel(model1Task)
+        pillarJob.enqueue(model1Task)
 
         pillarJob.start()
         model1Task.assertFailed()
@@ -59,7 +59,7 @@ class ExceptionParallelTests {
         val pillarJob = createPillarJob()
         val return5TaskWithCrash = ParallelReturn5TaskWithCrash()
         val return10Task = ParallelReturn10Task()
-        pillarJob.parallel(tasks = listOf(return5TaskWithCrash, return10Task))
+        pillarJob.enqueue(tasks = listOf(return5TaskWithCrash, return10Task))
 
         pillarJob.start()
         return5TaskWithCrash.assertFailed()
@@ -71,7 +71,7 @@ class ExceptionParallelTests {
         val pillarJob = createPillarJob()
         val return5Task = ParallelReturn5Task()
         val return10TaskWithCrash = ParallelReturn10TaskWithCrash()
-        pillarJob.parallel(tasks = listOf(return5Task, return10TaskWithCrash))
+        pillarJob.enqueue(tasks = listOf(return5Task, return10TaskWithCrash))
 
         pillarJob.start()
         return5Task.assertCompleted()
@@ -83,7 +83,7 @@ class ExceptionParallelTests {
         val pillarJob = createPillarJob()
         val return5TaskWithCrash = ParallelReturn5TaskWithCrash()
         val return10TaskWithCrash = ParallelReturn10TaskWithCrash()
-        pillarJob.parallel(tasks = listOf(return5TaskWithCrash, return10TaskWithCrash))
+        pillarJob.enqueue(tasks = listOf(return5TaskWithCrash, return10TaskWithCrash))
 
         pillarJob.start()
         return5TaskWithCrash.assertFailed()
@@ -96,7 +96,7 @@ class ExceptionParallelTests {
         val model1Result = TestModel1()
         val model1Task = ParallelWithTypeTask(initial = null, returns = model1Result)
         val model2Task = ParallelWithTypeTaskWithCrash(initial = null)
-        pillarJob.parallel(tasks = listOf(model1Task, model2Task))
+        pillarJob.enqueue(tasks = listOf(model1Task, model2Task))
 
         pillarJob.start()
         model1Task.assertCompleted()
@@ -109,7 +109,7 @@ class ExceptionParallelTests {
         val model2Result = TestModel1()
         val model1Task = ParallelWithTypeTaskWithCrash(initial = null)
         val model2Task = ParallelWithTypeTask(initial = null, returns = model2Result)
-        pillarJob.parallel(tasks = listOf(model1Task, model2Task))
+        pillarJob.enqueue(tasks = listOf(model1Task, model2Task))
 
         pillarJob.start()
         model1Task.assertFailed()
@@ -121,7 +121,7 @@ class ExceptionParallelTests {
         val pillarJob = createPillarJob()
         val model1Task = ParallelWithTypeTaskWithCrash(initial = null)
         val model2Task = ParallelWithTypeTaskWithCrash(initial = null)
-        pillarJob.parallel(tasks = listOf(model1Task, model2Task))
+        pillarJob.enqueue(tasks = listOf(model1Task, model2Task))
 
         pillarJob.start()
         model1Task.assertFailed()

@@ -10,8 +10,8 @@ import tasks.PillarTask
 interface PillarJob {
     val state: StateFlow<PillarJobState>
 
-    fun <T> parallel(task: PillarTask<T>)
-    fun parallel(tasks: List<PillarTask<*>>)
+    fun <T> enqueue(task: PillarTask<T>)
+    fun enqueue(tasks: List<PillarTask<*>>)
 
     fun start()
     fun cancel()
@@ -29,12 +29,12 @@ internal class PillarJobImpl(
 
     private var pillarJob: Job? = null
 
-    override fun <T> parallel(task: PillarTask<T>) {
+    override fun <T> enqueue(task: PillarTask<T>) {
         tasks.add(task)
     }
 
-    override fun parallel(tasks: List<PillarTask<*>>) {
-        tasks.forEach { parallel(it) }
+    override fun enqueue(tasks: List<PillarTask<*>>) {
+        tasks.forEach { enqueue(it) }
     }
 
     override fun start() {
