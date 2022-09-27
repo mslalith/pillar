@@ -1,6 +1,5 @@
 package dependent
 
-import app.cash.turbine.test
 import app.cash.turbine.testIn
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,8 +8,9 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import tasks.PillarJobState
 import utility.TEST_COMPLETE_DELAY_OFFSET
+import utility.assertJobCancelled
+import utility.assertJobCompleted
 import utility.createPillarJob
 import utility.startAndMeasureCompletionTime
 import utility.tasks.DependentReturn5Task
@@ -29,12 +29,7 @@ internal class SingleDependentTests {
         pillarJob.parallel(dependentReturn5Task)
 
         launch(context = this.coroutineContext) {
-            pillarJob.state.test {
-                assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                ensureAllEventsConsumed()
-            }
+            pillarJob.assertJobCompleted()
         }
 
         advanceTimeBy(delayTimeMillis = 200)
@@ -74,12 +69,7 @@ internal class SingleDependentTests {
         pillarJob.parallel(dependentReturn5Task)
 
         launch(context = this.coroutineContext) {
-            pillarJob.state.test {
-                assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.CANCELLED)
-                ensureAllEventsConsumed()
-            }
+            pillarJob.assertJobCancelled()
         }
 
         advanceTimeBy(delayTimeMillis = 200)

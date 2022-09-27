@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import tasks.PillarJobState
 import utility.TEST_COMPLETE_DELAY_OFFSET
+import utility.assertJobCancelled
 import utility.createPillarJob
 import utility.startAndMeasureCompletionTime
 import utility.tasks.DependentReturn10Task
@@ -107,12 +108,7 @@ internal class MultipleDependentTests {
         pillarJob.parallel(tasks = tasks)
 
         launch(context = this.coroutineContext) {
-            pillarJob.state.test {
-                assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.CANCELLED)
-                cancel()
-            }
+            pillarJob.assertJobCancelled()
         }
 
         advanceTimeBy(delayTimeMillis = 200)

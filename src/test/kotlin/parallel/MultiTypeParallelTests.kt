@@ -1,18 +1,15 @@
 package parallel
 
-import app.cash.turbine.test
-import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import tasks.PillarJobState
 import utility.TestModel1
 import utility.TestModel2
 import utility.TestModel3
 import utility.assertItemConsumed
+import utility.assertJobCompleted
 import utility.createPillarJob
 import utility.tasks.ParallelWithTypeTask
 
@@ -28,14 +25,7 @@ class MultiTypeParallelTests {
         pillarJob.parallel(tasks = listOf(intTask, stringTask, booleanTask))
 
         launch(context = this.coroutineContext) {
-            coroutineScope {
-                pillarJob.state.test {
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                    ensureAllEventsConsumed()
-                }
-            }
+            pillarJob.assertJobCompleted()
 
             intTask.assertItemConsumed(10)
             stringTask.assertItemConsumed("Hello")
@@ -58,14 +48,7 @@ class MultiTypeParallelTests {
         pillarJob.parallel(tasks = listOf(model1Task, model2Task, model3Task))
 
         launch(context = this.coroutineContext) {
-            coroutineScope {
-                pillarJob.state.test {
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                    ensureAllEventsConsumed()
-                }
-            }
+            pillarJob.assertJobCompleted()
 
             model1Task.assertItemConsumed(model1Result)
             model2Task.assertItemConsumed(model2Result)

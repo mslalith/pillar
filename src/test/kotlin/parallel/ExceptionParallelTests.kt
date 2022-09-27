@@ -1,15 +1,13 @@
 package parallel
 
-import app.cash.turbine.test
-import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import tasks.PillarJobState
 import utility.assertCompleted
 import utility.assertFailed
+import utility.assertJobCompleted
 import utility.createPillarJob
 import utility.tasks.ParallelReturn10Task
 import utility.tasks.ParallelReturn10TaskWithCrash
@@ -26,12 +24,7 @@ class ExceptionParallelTests {
         pillarJob.parallel(return5TaskWithCrash)
 
         launch(context = this.coroutineContext) {
-            pillarJob.state.test {
-                assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                ensureAllEventsConsumed()
-            }
+            pillarJob.assertJobCompleted()
         }
 
         advanceTimeBy(delayTimeMillis = 200)

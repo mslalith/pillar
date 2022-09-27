@@ -1,17 +1,16 @@
 package parallel
 
-import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import tasks.PillarJobState
 import utility.TEST_COMPLETE_DELAY_OFFSET
 import utility.assertItemConsumed
+import utility.assertJobCancelled
+import utility.assertJobCompleted
 import utility.createPillarJob
 import utility.startAndMeasureCompletionTime
 import utility.tasks.ParallelReturn5Task
@@ -26,15 +25,7 @@ internal class SingleParallelTests {
         pillarJob.parallel(return5Task)
 
         launch(context = this.coroutineContext) {
-            coroutineScope {
-                pillarJob.state.test {
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                    ensureAllEventsConsumed()
-                }
-            }
-
+            pillarJob.assertJobCompleted()
             return5Task.assertItemConsumed(5)
         }
 
@@ -61,12 +52,7 @@ internal class SingleParallelTests {
         pillarJob.parallel(return5Task)
 
         launch(context = this.coroutineContext) {
-            pillarJob.state.test {
-                assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.CANCELLED)
-                cancel()
-            }
+            pillarJob.assertJobCancelled()
         }
 
         advanceTimeBy(delayTimeMillis = 200)

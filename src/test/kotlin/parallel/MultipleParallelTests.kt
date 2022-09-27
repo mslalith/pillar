@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import tasks.PillarJobState
 import utility.TEST_COMPLETE_DELAY_OFFSET
 import utility.assertItemConsumed
+import utility.assertJobCancelled
 import utility.createPillarJob
 import utility.startAndMeasureCompletionTime
 import utility.tasks.ParallelReturn10Task
@@ -77,12 +78,7 @@ internal class MultipleParallelTests {
         pillarJob.parallel(tasks = tasks)
 
         launch(context = this.coroutineContext) {
-            pillarJob.state.test {
-                assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                assertThat(awaitItem()).isEqualTo(PillarJobState.CANCELLED)
-                cancel()
-            }
+            pillarJob.assertJobCancelled()
         }
 
         advanceTimeBy(delayTimeMillis = 200)
