@@ -1,18 +1,16 @@
 package dependent
 
-import app.cash.turbine.test
 import app.cash.turbine.testIn
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import tasks.PillarJobState
 import utility.TEST_COMPLETE_DELAY_OFFSET
 import utility.assertJobCancelled
+import utility.assertJobCompleted
 import utility.createPillarJob
 import utility.startAndMeasureCompletionTime
 import utility.tasks.DependentReturn10Task
@@ -20,6 +18,7 @@ import utility.tasks.DependentReturn5Task
 import utility.tasks.ParallelReturn10Task
 import utility.tasks.ParallelReturn15Task
 import utility.tasks.ParallelReturn5Task
+import utility.testOnJobComplete
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class MultipleDependentTests {
@@ -41,16 +40,10 @@ internal class MultipleDependentTests {
         pillarJob.parallel(tasks = tasks)
 
         launch(context = this.coroutineContext) {
-            coroutineScope {
-                pillarJob.state.test {
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.IDLE)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.RUNNING)
-                    assertThat(awaitItem()).isEqualTo(PillarJobState.COMPLETED)
-                    ensureAllEventsConsumed()
-
-                    val tasksResultSum = tasks.sumOf { it.data.value }
-                    assertThat(tasksResultSum).isEqualTo(15)
-                }
+            pillarJob.assertJobCompleted()
+            pillarJob.testOnJobComplete {
+                val tasksResultSum = tasks.sumOf { it.data.value }
+                assertThat(tasksResultSum).isEqualTo(15)
             }
         }
 

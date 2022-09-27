@@ -21,6 +21,26 @@ suspend fun PillarJob.assertJobState(expectedState: PillarJobState) = coroutineS
 suspend fun PillarJob.assertJobCompleted() = assertJobState(PillarJobState.COMPLETED)
 suspend fun PillarJob.assertJobCancelled() = assertJobState(PillarJobState.CANCELLED)
 
+suspend fun PillarJob.testOnJobState(expectedState: PillarJobState, block: () -> Unit) = coroutineScope {
+    val turbine = state.testIn(this)
+    val expectMostRecentItem = turbine.expectMostRecentItem()
+    if (expectMostRecentItem == expectedState) block() else {
+        while (true) {
+            val awaitItem = turbine.awaitItem()
+            if (awaitItem == expectedState) {
+                block()
+                break
+            }
+        }
+    }
+    turbine.cancel()
+}
+
+suspend fun PillarJob.testOnJobComplete(block: () -> Unit) = testOnJobState(
+    expectedState = PillarJobState.COMPLETED,
+    block = block
+)
+
 suspend fun <T> PillarTask<T>.assertItemConsumed(expected: T) = coroutineScope {
     data.test {
         assertThat(awaitItem()).isEqualTo(expected)
