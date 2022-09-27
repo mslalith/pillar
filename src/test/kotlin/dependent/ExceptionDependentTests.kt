@@ -6,6 +6,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
+import utility.TestModel1
+import utility.TestModel2
 import utility.assertCompleted
 import utility.assertDependentFailed
 import utility.assertFailed
@@ -16,9 +18,13 @@ import utility.tasks.DependentReturn10TaskWithCrash
 import utility.tasks.DependentReturn15Task
 import utility.tasks.DependentReturn5Task
 import utility.tasks.DependentReturn5TaskWithCrash
+import utility.tasks.DependentWithTypeTask
+import utility.tasks.DependentWithTypeTaskWithCrash
 import utility.tasks.ParallelReturn10Task
 import utility.tasks.ParallelReturn5Task
 import utility.tasks.ParallelReturn5TaskWithCrash
+import utility.tasks.ParallelWithTypeTask
+import utility.tasks.ParallelWithTypeTaskWithCrash
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ExceptionDependentTests {
@@ -79,6 +85,37 @@ class ExceptionDependentTests {
         pillarJob.start()
         parallelReturn5TaskWithCrash.assertFailed()
         dependentReturn5Task.assertDependentFailed()
+    }
+
+    @Test
+    fun `use single non-primitive dependent task with 1 dependency, verify crash`() = runTest {
+        val pillarJob = createPillarJob()
+        val parallelTask = ParallelWithTypeTask(initial = null, returns = TestModel1())
+        val dependentTaskWithCrash = DependentWithTypeTaskWithCrash(
+            initial = null,
+            dependsOn = listOf(parallelTask)
+        )
+        pillarJob.parallel(dependentTaskWithCrash)
+
+        pillarJob.start()
+        parallelTask.assertCompleted()
+        dependentTaskWithCrash.assertFailed()
+    }
+
+    @Test
+    fun `use single non-primitive dependent task with 1 dependency which crashes, verify crash`() = runTest {
+        val pillarJob = createPillarJob()
+        val parallelTask = ParallelWithTypeTaskWithCrash(initial = null)
+        val dependentTask = DependentWithTypeTask(
+            initial = null,
+            returns = TestModel1(),
+            dependsOn = listOf(parallelTask)
+        )
+        pillarJob.parallel(dependentTask)
+
+        pillarJob.start()
+        parallelTask.assertFailed()
+        dependentTask.assertDependentFailed()
     }
 
     @Test
@@ -154,6 +191,28 @@ class ExceptionDependentTests {
     }
 
     @Test
+    fun `use single dependent task which has 2 inner non-primitive dependencies, leaf task should fail`() = runTest {
+        val pillarJob = createPillarJob()
+        val parallelTaskWithCrash = ParallelWithTypeTaskWithCrash(initial = null)
+        val dependentTask1 = DependentWithTypeTask(
+            initial = null,
+            returns = TestModel1(),
+            dependsOn = listOf(parallelTaskWithCrash)
+        )
+        val dependentTask2 = DependentWithTypeTask(
+            initial = null,
+            returns = TestModel2(),
+            dependsOn = listOf(dependentTask1)
+        )
+        pillarJob.parallel(dependentTask2)
+
+        pillarJob.start()
+        parallelTaskWithCrash.assertFailed()
+        dependentTask1.assertDependentFailed()
+        dependentTask2.assertDependentFailed()
+    }
+
+    @Test
     fun `use single dependent task which has 2 inner dependencies, inner dependent task should fail`() = runTest {
         val pillarJob = createPillarJob()
         val parallelReturn5Task = ParallelReturn5Task()
@@ -169,5 +228,26 @@ class ExceptionDependentTests {
         parallelReturn5Task.assertCompleted()
         dependentReturn10TaskWithCrash.assertFailed()
         dependentReturn15Task.assertDependentFailed()
+    }
+
+    @Test
+    fun `use single dependent task which has 2 inner non-primitive dependencies, inner dependent task should fail`() = runTest {
+        val pillarJob = createPillarJob()
+        val parallelTask = ParallelWithTypeTask(initial = null, returns = TestModel1())
+        val dependentTask1WithCrash = DependentWithTypeTaskWithCrash(
+            initial = null,
+            dependsOn = listOf(parallelTask)
+        )
+        val dependentTask2 = DependentWithTypeTask(
+            initial = null,
+            returns = TestModel2(),
+            dependsOn = listOf(dependentTask1WithCrash)
+        )
+        pillarJob.parallel(dependentTask2)
+
+        pillarJob.start()
+        parallelTask.assertCompleted()
+        dependentTask1WithCrash.assertFailed()
+        dependentTask2.assertDependentFailed()
     }
 }

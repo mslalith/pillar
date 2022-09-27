@@ -70,3 +70,17 @@ class DependentReturn10TaskWithCrash(
         throw PillarTaskException(message = "DependentReturn10TaskWithCrash run() crashed")
     }
 }
+
+class DependentWithTypeTaskWithCrash<T>(
+    initial: T,
+    private val delayInMillis: Long = 2_000,
+    dependsOn: List<PillarTask<*>> = listOf()
+) : DependentPillarTask<T>(
+    initial = initial,
+    dependsOn = dependsOn
+) {
+    override suspend fun run(): T = delayAndReturn(delayInMillis) {
+        throw PillarTaskException(message = "DependentWithTypeTaskWithCrash run() crashed")
+    }
+}
+
