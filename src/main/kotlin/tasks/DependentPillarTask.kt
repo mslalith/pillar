@@ -7,9 +7,9 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 
-abstract class DependentPillarTask<T, R>(
+abstract class DependentPillarTask<T>(
     initial: T,
-    private val dependsOn: List<PillarTask<R>>
+    private val dependsOn: List<PillarTask<*>>
 ) : PillarTask<T>(initial) {
 
     override suspend fun CoroutineScope.launchTask(): Result<T> {
