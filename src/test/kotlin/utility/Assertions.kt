@@ -1,9 +1,18 @@
 package utility
 
+import app.cash.turbine.test
 import app.cash.turbine.testIn
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.coroutineScope
 import tasks.PillarTask
 import tasks.PillarTaskState
+
+suspend fun <T> PillarTask<T>.assertItemConsumed(expected: T) = coroutineScope {
+    data.test {
+        assertThat(awaitItem()).isEqualTo(expected)
+        ensureAllEventsConsumed()
+    }
+}
 
 suspend inline fun <T, reified S: PillarTaskState> PillarTask<T>.assertState() = coroutineScope {
     val turbine = state.testIn(this)

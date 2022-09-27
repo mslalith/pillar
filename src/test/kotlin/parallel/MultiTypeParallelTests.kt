@@ -12,6 +12,7 @@ import tasks.PillarJobState
 import utility.TestModel1
 import utility.TestModel2
 import utility.TestModel3
+import utility.assertItemConsumed
 import utility.createPillarJob
 import utility.tasks.ParallelWithTypeTask
 
@@ -36,27 +37,9 @@ class MultiTypeParallelTests {
                 }
             }
 
-            coroutineScope {
-                intTask.data.test {
-                    assertThat(awaitItem()).isEqualTo(10)
-                    ensureAllEventsConsumed()
-                }
-            }
-
-
-            coroutineScope {
-                stringTask.data.test {
-                    assertThat(awaitItem()).isEqualTo("Hello")
-                    ensureAllEventsConsumed()
-                }
-            }
-
-            coroutineScope {
-                booleanTask.data.test {
-                    assertThat(awaitItem()).isEqualTo(true)
-                    ensureAllEventsConsumed()
-                }
-            }
+            intTask.assertItemConsumed(10)
+            stringTask.assertItemConsumed("Hello")
+            booleanTask.assertItemConsumed(true)
         }
 
         advanceTimeBy(delayTimeMillis = 200)
@@ -84,27 +67,9 @@ class MultiTypeParallelTests {
                 }
             }
 
-            coroutineScope {
-                model1Task.data.test {
-                    assertThat(awaitItem()).isEqualTo(model1Result)
-                    ensureAllEventsConsumed()
-                }
-            }
-
-
-            coroutineScope {
-                model2Task.data.test {
-                    assertThat(awaitItem()).isEqualTo(model2Result)
-                    ensureAllEventsConsumed()
-                }
-            }
-
-            coroutineScope {
-                model3Task.data.test {
-                    assertThat(awaitItem()).isEqualTo(model3Result)
-                    ensureAllEventsConsumed()
-                }
-            }
+            model1Task.assertItemConsumed(model1Result)
+            model2Task.assertItemConsumed(model2Result)
+            model3Task.assertItemConsumed(model3Result)
         }
 
         advanceTimeBy(delayTimeMillis = 200)

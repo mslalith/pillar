@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import tasks.PillarJobState
 import utility.TEST_COMPLETE_DELAY_OFFSET
+import utility.assertItemConsumed
 import utility.createPillarJob
 import utility.startAndMeasureCompletionTime
 import utility.tasks.ParallelReturn5Task
@@ -34,12 +35,7 @@ internal class SingleParallelTests {
                 }
             }
 
-            coroutineScope {
-                return5Task.data.test {
-                    assertThat(awaitItem()).isEqualTo(5)
-                    ensureAllEventsConsumed()
-                }
-            }
+            return5Task.assertItemConsumed(5)
         }
 
         advanceTimeBy(delayTimeMillis = 200)
