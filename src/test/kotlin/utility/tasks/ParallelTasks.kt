@@ -35,3 +35,12 @@ class ParallelReturn10TaskWithCrash(private val delayInMillis: Long = 2_000) : P
         throw PillarTaskException(message = "ParallelReturn10TaskWithCrash run() crashed")
     }
 }
+
+class ParallelWithTypeTaskWithCrash<T>(
+    initial: T,
+    private val delayInMillis: Long = 2_000
+) : ParallelPillarTask<T>(initial = initial) {
+    override suspend fun run(): T = delayAndReturn(delayInMillis) {
+        throw PillarTaskException(message = "ParallelWithTypeTaskWithCrash run() crashed")
+    }
+}
